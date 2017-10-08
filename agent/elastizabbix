@@ -6,6 +6,7 @@ import urllib2
 import time
 import errno
 import base64
+from pyzabbix import ZabbixMetric, ZabbixSender
 
 ttl = 60
 username=""
@@ -87,13 +88,17 @@ if __name__ == '__main__':
     stat = sys.argv[2]
     if api == 'discover':
         if stat == 'nodes':
+            #disco_values = [ZabbixMetric('localhost', 'discover[nodes]', discover_nodes())]
+            #result = ZabbixSender(use_config=True).send(disco_values)
             print discover_nodes()
         if stat == 'indices':
+            #disco_values = [ZabbixMetric('localhost', 'discover[indices]', discover_indices())]
+            #result = ZabbixSender(use_config=True).send(disco_values)
             print discover_indices()
-
     else:
         stat = get_stat(api, stat)
         if isinstance(stat, dict):
             print ''
         else:
-            print stat
+            metrics = [ZabbixMetric('localhost', api+'['+stat+']', stat)]
+            result = ZabbixSender(use_config=True).send(metrics)
